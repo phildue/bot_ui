@@ -8,13 +8,13 @@ import launch_ros.actions
 
 def generate_launch_description():
     joy_config = launch.substitutions.LaunchConfiguration('joy_config')
-    joy_dev = launch.substitutions.LaunchConfiguration('joy_dev')
     config_filepath = launch.substitutions.LaunchConfiguration('config_filepath')
 
     return launch.LaunchDescription([
         launch.actions.DeclareLaunchArgument('joy_vel', default_value='/bot_base_controller/cmd_vel_unstamped'),
         launch.actions.DeclareLaunchArgument('joy_config', default_value='ps4'),
-        launch.actions.DeclareLaunchArgument('joy_dev', default_value='/dev/input/js0'),
+        launch.actions.DeclareLaunchArgument('device_name', default_value='/dev/input/js0'),
+        launch.actions.DeclareLaunchArgument('device_id', default_value='0'),
         launch.actions.DeclareLaunchArgument('config_filepath', default_value=[
             launch.substitutions.TextSubstitution(text=os.path.join(
                 get_package_share_directory('bot_ui'), 'config', '')),
@@ -23,7 +23,8 @@ def generate_launch_description():
         launch_ros.actions.Node(
             package='joy', executable='joy_node', name='joy_node',
             parameters=[{
-                'dev': joy_dev,
+                'device_id': launch.substitutions.LaunchConfiguration('device_id'),
+                'device_name': launch.substitutions.LaunchConfiguration('device_name'),
                 'deadzone': 0.3,
                 'autorepeat_rate': 20.0,
             }]),
